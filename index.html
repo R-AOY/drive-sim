@@ -2,115 +2,35 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>車種選択シミュレーター</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drive Sim - 維持費シミュレーター</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>車種選択シミュレーター</h1>
+  <header>
+    <h1>Drive Sim｜あなたのカーライフをシミュレーション！</h1>
+  </header>
 
-  <form id="carForm">
-    <label>カテゴリ:</label>
-    <select id="category">
-      <option value="軽自動車">軽自動車</option>
-    </select>
-    <br><br>
+  <main>
+    <section>
+      <h2>車種選択シミュレーター</h2>
 
-    <label>メーカー:</label>
-    <select id="maker" onchange="updateModels()">
-      <option value="">--選択してください--</option>
-      <option value="ホンダ">ホンダ</option>
-    </select>
-    <br><br>
+      <div class="selector-group">
+        <select id="maker-select"></select>
+        <select id="model-select"></select>
+        <select id="year-select"></select>
+        <select id="grade-select"></select>
+      </div>
 
-    <label>車種:</label>
-    <select id="model" onchange="updateYears()">
-      <option value="">--選択してください--</option>
-    </select>
-    <br><br>
+      <div id="output"></div>
+    </section>
+  </main>
 
-    <label>年式:</label>
-    <select id="year" onchange="updateGrades()">
-      <option value="">--選択してください--</option>
-    </select>
-    <br><br>
+  <footer>
+    <p>&copy; 2025 Drive Sim All rights reserved.</p>
+  </footer>
 
-    <label>グレード:</label>
-    <select id="grade">
-      <option value="">--選択してください--</option>
-    </select>
-    <br><br>
-  </form>
-
-  <script>
-    // データベース（簡易版）
-    const carData = {
-      "ホンダ": {
-        "N-BOX": {
-          "2018": ["G", "L", "カスタムL"],
-          "2019": ["G", "L", "カスタムL"],
-          "2020": ["G", "L", "カスタムL"],
-          "2021": ["G", "L", "カスタムL"],
-          "2022": ["G", "L", "カスタムL"],
-          "2023": ["G", "L", "カスタムL"],
-          "2024": ["G", "L", "カスタムL"]
-        }
-      }
-    };
-
-    function updateModels() {
-      const maker = document.getElementById('maker').value;
-      const modelSelect = document.getElementById('model');
-      modelSelect.innerHTML = '<option value="">--選択してください--</option>';
-
-      if (maker && carData[maker]) {
-        for (let model in carData[maker]) {
-          const option = document.createElement('option');
-          option.value = model;
-          option.textContent = model;
-          modelSelect.appendChild(option);
-        }
-      }
-
-      // 年式とグレードもリセット
-      document.getElementById('year').innerHTML = '<option value="">--選択してください--</option>';
-      document.getElementById('grade').innerHTML = '<option value="">--選択してください--</option>';
-    }
-
-    function updateYears() {
-      const maker = document.getElementById('maker').value;
-      const model = document.getElementById('model').value;
-      const yearSelect = document.getElementById('year');
-      yearSelect.innerHTML = '<option value="">--選択してください--</option>';
-
-      if (maker && model && carData[maker][model]) {
-        for (let year in carData[maker][model]) {
-          const option = document.createElement('option');
-          option.value = year;
-          option.textContent = year;
-          yearSelect.appendChild(option);
-        }
-      }
-
-      // グレードもリセット
-      document.getElementById('grade').innerHTML = '<option value="">--選択してください--</option>';
-    }
-
-    function updateGrades() {
-      const maker = document.getElementById('maker').value;
-      const model = document.getElementById('model').value;
-      const year = document.getElementById('year').value;
-      const gradeSelect = document.getElementById('grade');
-      gradeSelect.innerHTML = '<option value="">--選択してください--</option>';
-
-      if (maker && model && year && carData[maker][model][year]) {
-        carData[maker][model][year].forEach(grade => {
-          const option = document.createElement('option');
-          option.value = grade;
-          option.textContent = grade;
-          gradeSelect.appendChild(option);
-        });
-      }
-    }
-  </script>
-
+  <!-- JavaScriptの読み込み -->
+  <script src="js/main.js"></script>
 </body>
 </html>
