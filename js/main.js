@@ -1,120 +1,141 @@
-// js/main.js
-
-// グローバル変数
 let carData = {};
 
-// ページが読み込まれたら実行
-document.addEventListener("DOMContentLoaded", function() {
-  // car-models.jsonを取得
-  fetch('js/car-models.json')
-    .then(response => response.json())
-    .then(data => {
-      carData = data;
-      console.log("データ読み込み成功", carData);
-      populateMakers();
-    })
-    .catch(error => {
-      console.error("データ読み込みエラー", error);
-    });
-});
+// データ取得
+fetch('car-models.json')
+  .then(response => response.json())
+  .then(data => {
+    carData = data;
+    setupOwnedCarSelectors();
+    setupAddCandidateButton();
+  });
 
-// メーカー選択肢を作成
-function populateMakers() {
-  const makerSelect = document.getElementById("maker-select");
-  makerSelect.innerHTML = "<option value=''>メーカーを選択</option>";
-  Object.keys(carData).forEach(maker => {
-    const option = document.createElement("option");
-    option.value = maker;
-    option.textContent = maker;
-    makerSelect.appendChild(option);
+// 所有車選択セットアップ
+function setupOwnedCarSelectors() {
+  const ownCarExists = document.getElementById('own-car-exists');
+  const ownCarSelectors = document.getElementById('own-car-selectors');
+
+  ownCarExists.addEventListener('change', () => {
+    if (ownCarExists.value === 'yes') {
+      ownCarSelectors.style.display = 'block';
+      populateMakerSelect('own-maker-select', carData);
+    } else {
+      ownCarSelectors.style.display = 'none';
+    }
+  });
+
+  setupSelectorChain('own-maker-select', 'own-model-select', 'own-year-select', 'own-grade-select');
+}
+
+// 購入候補追加ボタンセットアップ
+function setupAddCandidateButton() {
+  const addButton = document.getElementById('add-candidate-button');
+  const candidatesList = document.getElementById('candidates-list');
+
+  addButton.addEventListener('click', () => {
+    const candidateId = Date.now();
+    const candidateDiv = document.createElement('div');
+    candidateDiv.className = 'candidate';
+    candidateDiv.dataset.id = candidateId;
+
+    candidateDiv.innerHTML = `
+      <hr>
+      <select class="maker-select"></select>
+      <select class="model-select"></select>
+      <select class="year-select"></select>
+      <select class="grade-select"></select>
+
+      <label>新車/中古車を選択：</label>
+      <select class="new-used-select">
+        <option value="">選択してください</option>
+        <option value="new">新車</option>
+        <option value="used">中古車</option>
+      </select>
+
+      <div class="mileage-input" style="display:none;">
+        <label>走行距離 (km):</label>
+        <input type="number" class="mileage-field" placeholder="例：30000">
+      </div>
+    `;
+
+    candidatesList.appendChild(candidateDiv);
+
+    // 各セレクターにイベント設定
+    populateMakerSelect(candidateDiv.querySelector('.maker-select'), carData);
+    setupSelectorChain(
+      candidateDiv.querySelector('.maker-select'),
+      candidateDiv.querySelector('.model-select'),
+      candidateDiv.querySelector('.year-select'),
+      candidateDiv.querySelector('.grade-select')
+    );
+
+    const newUsedSelect = candidateDiv.querySelector('.new-used-select');
+    newUsedSelect.addEventListener('change', () => {
+      const mileageInput = candidateDiv.querySelector('.mileage-input');
+      if (newUsedSelect.value === 'used') {
+        mileageInput.style.display = 'block';
+      } else {
+        mileageInput.style.display = 'none';
+      }
+    });
   });
 }
 
-// 車種選択肢を作成
-function populateModels(maker) {
-  const modelSelect = document.getElementById("model-select");
-  modelSelect.innerHTML = "<option value=''>車種を選択</option>";
-  if (maker && carData[maker]) {
-    Object.keys(carData[maker]).forEach(model => {
-      const option = document.createElement("option");
-      option.value = model;
-      option.textContent = model;
-      modelSelect.appendChild(option);
-    });
+// メーカー選択を作成
+function populateMakerSelect(selectIdOrElement, data) {
+  const select = typeof selectIdOrElement === 'string' ? document.getElementById(selectIdOrElement) : selectIdOrElement;
+  select.innerHTML = '<option value="">メーカーを選択</option>';
+  for (const maker in data) {
+    const option = document.createElement('option');
+    option.value = maker;
+    option.textContent = maker;
+    select.appendChild(option);
   }
 }
 
-// 年式選択肢を作成
-function populateYears(maker, model) {
-  const yearSelect = document.getElementById("year-select");
-  yearSelect.innerHTML = "<option value=''>年式を選択</option>";
-  if (maker && model && carData[maker][model]) {
-    Object.keys(carData[maker][model]).forEach(year => {
-      const option = document.createElement("option");
-      option.value = year;
-      option.textContent = year;
-      yearSelect.appendChild(option);
-    });
-  }
-}
+// 連動するセレクター設定
+function setupSelectorChain(makerId, modelId, yearId, gradeId) {
+  const makerSelect = typeof makerId === 'string' ? document.getElementById(makerId) : makerId;
+  const modelSelect = typeof modelId === 'string' ? document.getElementById(modelId) : modelId;
+  const yearSelect = typeof yearId === 'string' ? document.getElementById(yearId) : yearId;
+  const gradeSelect = typeof gradeId === 'string' ? document.getElementById(gradeId) : gradeId;
 
-// グレード選択肢を作成
-function populateGrades(maker, model, year) {
-  const gradeSelect = document.getElementById("grade-select");
-  gradeSelect.innerHTML = "<option value=''>グレードを選択</option>";
-  if (maker && model && year && carData[maker][model][year]) {
-    Object.keys(carData[maker][model][year]).forEach(grade => {
-      const option = document.createElement("option");
-      option.value = grade;
-      option.textContent = grade;
-      gradeSelect.appendChild(option);
-    });
-  }
-}
+  makerSelect.addEventListener('change', () => {
+    modelSelect.innerHTML = '<option value="">車種を選択</option>';
+    yearSelect.innerHTML = '<option value="">年式を選択</option>';
+    gradeSelect.innerHTML = '<option value="">グレードを選択</option>';
+    if (makerSelect.value && carData[makerSelect.value]) {
+      for (const model in carData[makerSelect.value]) {
+        const option = document.createElement('option');
+        option.value = model;
+        option.textContent = model;
+        modelSelect.appendChild(option);
+      }
+    }
+  });
 
-// 維持費情報を表示
-function showMaintenanceCost(maker, model, year, grade) {
-  const outputDiv = document.getElementById("output");
-  if (maker && model && year && grade && carData[maker][model][year][grade]) {
-    const data = carData[maker][model][year][grade];
-    outputDiv.innerHTML = `
-      <h3>維持費情報</h3>
-      <ul>
-        <li>税金: ¥${data.税金.toLocaleString()}</li>
-        <li>保険料目安: ¥${data.保険料目安.toLocaleString()}</li>
-        <li>燃費: ${data.燃費} km/L</li>
-        <li>故障率: ${(data.故障率 * 100).toFixed(1)}%</li>
-      </ul>
-    `;
-  } else {
-    outputDiv.innerHTML = "";
-  }
-}
+  modelSelect.addEventListener('change', () => {
+    yearSelect.innerHTML = '<option value="">年式を選択</option>';
+    gradeSelect.innerHTML = '<option value="">グレードを選択</option>';
+    if (makerSelect.value && modelSelect.value && carData[makerSelect.value][modelSelect.value]) {
+      for (const year in carData[makerSelect.value][modelSelect.value]) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+      }
+    }
+  });
 
-// セレクトボックスのイベントリスナー設定
-document.addEventListener("change", function(e) {
-  if (e.target.id === "maker-select") {
-    populateModels(e.target.value);
-    document.getElementById("model-select").value = "";
-    document.getElementById("year-select").innerHTML = "";
-    document.getElementById("grade-select").innerHTML = "";
-    document.getElementById("output").innerHTML = "";
-  } else if (e.target.id === "model-select") {
-    const maker = document.getElementById("maker-select").value;
-    populateYears(maker, e.target.value);
-    document.getElementById("year-select").value = "";
-    document.getElementById("grade-select").innerHTML = "";
-    document.getElementById("output").innerHTML = "";
-  } else if (e.target.id === "year-select") {
-    const maker = document.getElementById("maker-select").value;
-    const model = document.getElementById("model-select").value;
-    populateGrades(maker, model, e.target.value);
-    document.getElementById("grade-select").value = "";
-    document.getElementById("output").innerHTML = "";
-  } else if (e.target.id === "grade-select") {
-    const maker = document.getElementById("maker-select").value;
-    const model = document.getElementById("model-select").value;
-    const year = document.getElementById("year-select").value;
-    showMaintenanceCost(maker, model, year, e.target.value);
-  }
-});
+  yearSelect.addEventListener('change', () => {
+    gradeSelect.innerHTML = '<option value="">グレードを選択</option>';
+    if (makerSelect.value && modelSelect.value && yearSelect.value && carData[makerSelect.value][modelSelect.value][yearSelect.value]) {
+      const grades = carData[makerSelect.value][modelSelect.value][yearSelect.value].grades;
+      for (const grade of grades) {
+        const option = document.createElement('option');
+        option.value = grade;
+        option.textContent = grade;
+        gradeSelect.appendChild(option);
+      }
+    }
+  });
+}
