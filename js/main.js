@@ -25,7 +25,7 @@ function initializeOwnCarSection() {
     ownCarDetails.style.display = (ownCarSelect.value === 'yes') ? 'block' : 'none';
   });
 
-  if (Object.keys(carData).length === 0) {
+  if (!carData || Object.keys(carData).length === 0) {
     console.error("carData が空です。データが正しく取得されているか確認してください。");
     return;
   }
@@ -33,12 +33,15 @@ function initializeOwnCarSection() {
   populateSelect(ownMake, Object.keys(carData));
 
   ownMake.addEventListener('change', () => {
-    populateSelect(ownModel, Object.keys(carData[ownMake.value] || {}));
+    const selectedMake = ownMake.value;
+    populateSelect(ownModel, selectedMake ? Object.keys(carData[selectedMake] || {}) : []);
     ownGrade.innerHTML = ''; 
   });
 
   ownModel.addEventListener('change', () => {
-    populateSelect(ownGrade, carData[ownMake.value]?.[ownModel.value] || []);
+    const selectedMake = ownMake.value;
+    const selectedModel = ownModel.value;
+    populateSelect(ownGrade, selectedMake && selectedModel ? carData[selectedMake]?.[selectedModel] || [] : []);
   });
 }
 
@@ -89,7 +92,7 @@ function addCandidateForm(id) {
   const newUsed = document.getElementById(`new-used-${id}`);
   const mileageDiv = document.getElementById(`mileage-div-${id}`);
 
-  if (Object.keys(carData).length === 0) {
+  if (!carData || Object.keys(carData).length === 0) {
     console.error("carData が空です。データが正しく取得されているか確認してください。");
     return;
   }
@@ -97,12 +100,15 @@ function addCandidateForm(id) {
   populateSelect(make, Object.keys(carData));
 
   make.addEventListener('change', () => {
-    populateSelect(model, Object.keys(carData[make.value] || {}));
+    const selectedMake = make.value;
+    populateSelect(model, selectedMake ? Object.keys(carData[selectedMake] || {}) : []);
     grade.innerHTML = ''; 
   });
 
   model.addEventListener('change', () => {
-    populateSelect(grade, carData[make.value]?.[model.value] || []);
+    const selectedMake = make.value;
+    const selectedModel = model.value;
+    populateSelect(grade, selectedMake && selectedModel ? carData[selectedMake]?.[selectedModel] || [] : []);
   });
 
   newUsed.addEventListener('change', () => {
@@ -114,7 +120,7 @@ function addCandidateForm(id) {
 function populateSelect(selectElement, options) {
   console.log("populateSelect に渡された options:", options); // デバッグ用
   selectElement.innerHTML = '<option value="">選択してください</option>';
-  
+
   if (!Array.isArray(options)) {
     console.error("options は配列ではありません。データ構造を確認してください:", options);
     return;
