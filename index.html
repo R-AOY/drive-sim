@@ -2,54 +2,31 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Drive Sim - 維持費シミュレーター</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Drive Sim</title>
 </head>
 <body>
-  <header>
-    <h1>Drive Sim｜あなたのカーライフをシミュレーション！</h1>
-  </header>
+  <h1>Drive Sim（維持費シミュレーター）</h1>
 
-  <main>
-    <!-- 所有車セクション -->
-    <section id="owned-car-section">
-      <h2>あなたが現在所有している車</h2>
-      <label for="own-car-exists">所有している車はありますか？</label>
-      <select id="own-car-exists">
-        <option value="">選択してください</option>
-        <option value="yes">はい</option>
+  <div id="owned-car-section">
+    <h2>所有している車</h2>
+    <label>所有していますか？
+      <select id="hasOwnedCar">
         <option value="no">いいえ</option>
+        <option value="yes">はい</option>
       </select>
+    </label>
+    <div id="owned-car-fields" style="display:none;">
+      <div id="owned-car-selectors"></div>
+      <label>走行距離（km）: <input type="number" id="ownedCarMileage"></label>
+    </div>
+  </div>
 
-      <div id="own-car-selectors" style="display:none;">
-        <select id="own-maker-select"></select>
-        <select id="own-model-select"></select>
-        <select id="own-year-select"></select>
-        <select id="own-grade-select"></select>
+  <div id="purchase-candidates">
+    <h2>購入候補の車</h2>
+    <button id="add-candidate">購入候補を追加</button>
+    <div id="candidate-list"></div>
+  </div>
 
-        <label for="own-mileage">走行距離 (km):</label>
-        <input type="number" id="own-mileage" placeholder="例：50000">
-      </div>
-    </section>
-
-    <hr>
-
-    <!-- 購入候補セクション -->
-    <section id="purchase-candidates-section">
-      <h2>購入候補の車</h2>
-      <button id="add-candidate-button">購入候補を追加</button>
-      <div id="candidates-list"></div>
-    </section>
-
-    <div id="output"></div>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 Drive Sim All rights reserved.</p>
-  </footer>
-
-  <!-- JavaScript -->
   <script src="/drive-sim/js/main.js"></script>
 </body>
 </html>
