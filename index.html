@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>自動車維持費・保険シミュレーター</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 2em; background: #f0f2f5; }
+    .container { max-width: 700px; margin: auto; background: white; padding: 2em; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    label, select, input { display: block; margin: 1em 0 0.5em; }
+    .result { margin-top: 1.5em; font-weight: bold; }
+    canvas { margin-top: 2em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🚗 維持費・保険料シミュレーター</h2>
+
+    <label for="carType">車種タイプ</label>
+    <select id="carType">
+      <option value="kei">軽自動車</option>
+      <option value="normal">普通自動車</option>
+    </select>
+
+    <label for="basePremium">基本保険料（20等級・全年齢）</label>
+    <input type="number" id="basePremium" value="30000" min="0">
+
+    <label for="grade">等級（1〜20）</label>
+    <input type="number" id="grade" value="6" min="1" max="20">
+
+    <label for="hasVehicleInsurance">車両保険</label>
+    <select id="hasVehicleInsurance">
+      <option value="yes">あり（+¥35,000）</option>
+      <option value="no">なし</option>
+    </select>
+
+    <label for="annualTax">軽自動車税／自動車税</label>
+    <input type="number" id="annualTax" value="10800">
+
+    <label for="weightTax">重量税（年割換算）</label>
+    <input type="number" id="weightTax" value="6600">
+
+    <label for="inspectionCost">車検費用（年割換算）</label>
+    <input type="number" id="inspectionCost" value="60000">
+
+    <label for="repairCost">年間故障修理費（予測平均）</label>
+    <input type="number" id="repairCost" value="25000">
+
+    <button onclick="calculateTotalCost()">💰 年間維持費を計算</button>
+
+    <div class="result" id="totalCostResult">年間維持費がここに表示されます。</div>
+
+    <canvas id="costChart" width="400" height="200"></canvas>
+  </div>
+
+  <script>
+    const rates = {
+      kei: {
+        1: 1.64, 2: 1.28, 3: 1.12, 4: 1.02, 5: 0.87, 6: 0.81, 7: 0.70, 8: 0.60, 9: 0.57, 10: 0.55,
+        11: 0.53, 12: 0.52, 13: 0.51, 14: 0.50, 15: 0.49, 16: 0.48, 17: 0.47, 18: 0.46, 19: 0.45, 20: 0.43
+      },
+      normal: {
+        1: 1.64, 2: 1.28, 3: 1.12, 4: 1.02, 5: 0.87, 6: 0.86, 7: 0.80, 8: 0.70, 9: 0.65, 10: 0.61,
+        11: 0.58, 12: 0.56, 13: 0.55, 14: 0.54, 15: 0.53, 16: 0.52, 17: 0.51, 18: 0.50, 19: 0.49, 20: 0.48
+      }
+    };
+
+    let chart;
+
+    function calculateTotalCost() {
+      const carType = document.getElementById("carType").value;
+      const basePremium = parseFloat(document.getElementById("basePremium").value);
+      const grade = parseInt(document.getElementById("grade").value);
+      const hasVehicleInsurance = document.getElementById("hasVehicleInsurance").value;
+      const annualTax = parseFloat(document.getElementById("annualTax").value);
+      const weightTax = parseFloat(document.getElementById("weightTax").value);
+      const inspectionCost = parseFloat(document.getElementById("inspectionCost").value);
+      const repairCost = parseFloat(document.getElementById("repairCost").value);
+
+      const rate = rates[carType][grade] || 1;
+      const baseInsurance = Math.round(basePremium * rate);
+      const vehicleInsurance = hasVehicleInsurance === "yes" ? 35000 : 0;
+      const total = annualTax + weightTax + inspectionCost + repairCost + baseInsurance + vehicleInsurance;
+
+      document.getElementById("totalCostResult").innerText = `年間維持費：¥${total.toLocaleString()}（うち保険料 ¥${(baseInsurance + vehicleInsurance).toLocaleString()}）`;
+
+      updateChart([annualTax, weightTax, inspectionCost, repairCost, baseInsurance, vehicleInsurance]);
+    }
+
+    function updateChart(data) {
+      const ctx = document.getElementById('costChart').getContext('2d');
+      if (chart) chart.destroy();
+
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['自動車税', '重量税', '車検', '修理費', '任意保険', '車両保険'],
+          datasets: [{
+            label: '費用内訳（円）',
+            data: data,
+            backgroundColor: [
+              '#8ecae6', '#219ebc', '#ffb703', '#fb8500', '#d00000', '#6a040f'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
