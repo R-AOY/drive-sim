@@ -1,7 +1,7 @@
 let carData = {};
 
 // データ読み込み
-fetch("/drive-sim/js/car-models.json")
+fetch("car-models.json")
   .then(response => response.json())
   .then(data => {
     carData = data;
@@ -18,18 +18,14 @@ function initializeOwnCarSection() {
   const ownGrade = document.getElementById('own-grade');
 
   ownCarSelect.addEventListener('change', () => {
-    if (ownCarSelect.value === 'yes') {
-      ownCarDetails.style.display = 'block';
-    } else {
-      ownCarDetails.style.display = 'none';
-    }
+    ownCarDetails.style.display = (ownCarSelect.value === 'yes') ? 'block' : 'none';
   });
 
   populateSelect(ownMake, Object.keys(carData));
 
   ownMake.addEventListener('change', () => {
     populateSelect(ownModel, Object.keys(carData[ownMake.value] || {}));
-    ownGrade.innerHTML = '';
+    ownGrade.innerHTML = ''; 
   });
 
   ownModel.addEventListener('change', () => {
@@ -78,7 +74,6 @@ function addCandidateForm(id) {
   `;
   container.appendChild(div);
 
-  // 各種イベント設定
   const make = document.getElementById(`make-${id}`);
   const model = document.getElementById(`model-${id}`);
   const grade = document.getElementById(`grade-${id}`);
@@ -89,7 +84,7 @@ function addCandidateForm(id) {
 
   make.addEventListener('change', () => {
     populateSelect(model, Object.keys(carData[make.value] || {}));
-    grade.innerHTML = '';
+    grade.innerHTML = ''; 
   });
 
   model.addEventListener('change', () => {
@@ -97,17 +92,13 @@ function addCandidateForm(id) {
   });
 
   newUsed.addEventListener('change', () => {
-    if (newUsed.value === 'used') {
-      mileageDiv.style.display = 'block';
-    } else {
-      mileageDiv.style.display = 'none';
-    }
+    mileageDiv.style.display = (newUsed.value === 'used') ? 'block' : 'none';
   });
 }
 
 // 汎用セレクトボックス生成
 function populateSelect(selectElement, options) {
-  selectElement.innerHTML = '';
+  selectElement.innerHTML = '<option value="">選択してください</option>';
   options.forEach(option => {
     const opt = document.createElement('option');
     opt.value = option;
