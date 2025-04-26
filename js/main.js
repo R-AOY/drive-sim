@@ -1,7 +1,7 @@
 let carData = {};
 
 // データ読み込み
-fetch("car-models.json")
+fetch("js/car-models.json")
   .then(response => response.json())
   .then(data => {
     carData = data;
