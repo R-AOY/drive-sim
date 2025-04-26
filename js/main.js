@@ -1,7 +1,7 @@
 let carData = [];
 
 async function loadCarData() {
-  const response = await fetch('js/car-models.json');
+  const response = await fetch('/drive-sim/js/car-models.json');
   carData = await response.json();
 }
 
