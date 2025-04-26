@@ -2,30 +2,47 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Drive Sim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>車の維持費シミュレーター</title>
 </head>
 <body>
-  <h1>Drive Sim（維持費シミュレーター）</h1>
+  <h1>車の維持費シミュレーター</h1>
 
-  <div id="owned-car-section">
-    <h2>所有している車</h2>
-    <label>所有していますか？
-      <select id="hasOwnedCar">
-        <option value="no">いいえ</option>
-        <option value="yes">はい</option>
-      </select>
-    </label>
-    <div id="owned-car-fields" style="display:none;">
-      <div id="owned-car-selectors"></div>
-      <label>走行距離（km）: <input type="number" id="ownedCarMileage"></label>
+  <section id="current-car-section">
+    <h2>現在所有している車</h2>
+    <label>所有していますか？</label>
+    <select id="own-car-select">
+      <option value="no">所有していない</option>
+      <option value="yes">所有している</option>
+    </select>
+
+    <div id="own-car-details" style="display:none; margin-top: 10px;">
+      <div>
+        <label>メーカー:</label>
+        <select id="own-make"></select>
+      </div>
+      <div>
+        <label>車種:</label>
+        <select id="own-model"></select>
+      </div>
+      <div>
+        <label>グレード:</label>
+        <select id="own-grade"></select>
+      </div>
+      <div>
+        <label>走行距離(km):</label>
+        <input type="number" id="own-mileage" min="0">
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div id="purchase-candidates">
+  <hr>
+
+  <section id="purchase-candidates-section">
     <h2>購入候補の車</h2>
+    <div id="candidates-container"></div>
     <button id="add-candidate">購入候補を追加</button>
-    <div id="candidate-list"></div>
-  </div>
+  </section>
 
   <script src="/drive-sim/js/main.js"></script>
 </body>
