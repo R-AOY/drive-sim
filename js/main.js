@@ -2,9 +2,13 @@ let carData = {};
 
 // データ読み込み
 fetch("js/car-models.json")
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) throw new Error(`HTTPエラー: ${response.status}`);
+    return response.json();
+  })
   .then(data => {
     carData = data;
+    console.log("データロード完了:", carData); // デバッグ用
     initializeOwnCarSection();
   })
   .catch(error => console.error("データ読み込みエラー:", error));
@@ -20,6 +24,11 @@ function initializeOwnCarSection() {
   ownCarSelect.addEventListener('change', () => {
     ownCarDetails.style.display = (ownCarSelect.value === 'yes') ? 'block' : 'none';
   });
+
+  if (Object.keys(carData).length === 0) {
+    console.error("carData が空です。データが正しく取得されているか確認してください。");
+    return;
+  }
 
   populateSelect(ownMake, Object.keys(carData));
 
@@ -80,6 +89,11 @@ function addCandidateForm(id) {
   const newUsed = document.getElementById(`new-used-${id}`);
   const mileageDiv = document.getElementById(`mileage-div-${id}`);
 
+  if (Object.keys(carData).length === 0) {
+    console.error("carData が空です。データが正しく取得されているか確認してください。");
+    return;
+  }
+
   populateSelect(make, Object.keys(carData));
 
   make.addEventListener('change', () => {
@@ -98,7 +112,14 @@ function addCandidateForm(id) {
 
 // 汎用セレクトボックス生成
 function populateSelect(selectElement, options) {
+  console.log("populateSelect に渡された options:", options); // デバッグ用
   selectElement.innerHTML = '<option value="">選択してください</option>';
+  
+  if (!Array.isArray(options)) {
+    console.error("options は配列ではありません。データ構造を確認してください:", options);
+    return;
+  }
+
   options.forEach(option => {
     const opt = document.createElement('option');
     opt.value = option;
