@@ -12,25 +12,44 @@
   </header>
 
   <main>
-    <section>
-      <h2>車種選択シミュレーター</h2>
+    <!-- 所有車セクション -->
+    <section id="owned-car-section">
+      <h2>あなたが現在所有している車</h2>
+      <label for="own-car-exists">所有している車はありますか？</label>
+      <select id="own-car-exists">
+        <option value="">選択してください</option>
+        <option value="yes">はい</option>
+        <option value="no">いいえ</option>
+      </select>
 
-      <div class="selector-group">
-        <select id="maker-select"></select>
-        <select id="model-select"></select>
-        <select id="year-select"></select>
-        <select id="grade-select"></select>
+      <div id="own-car-selectors" style="display:none;">
+        <select id="own-maker-select"></select>
+        <select id="own-model-select"></select>
+        <select id="own-year-select"></select>
+        <select id="own-grade-select"></select>
+
+        <label for="own-mileage">走行距離 (km):</label>
+        <input type="number" id="own-mileage" placeholder="例：50000">
       </div>
-
-      <div id="output"></div>
     </section>
+
+    <hr>
+
+    <!-- 購入候補セクション -->
+    <section id="purchase-candidates-section">
+      <h2>購入候補の車</h2>
+      <button id="add-candidate-button">購入候補を追加</button>
+      <div id="candidates-list"></div>
+    </section>
+
+    <div id="output"></div>
   </main>
 
   <footer>
     <p>&copy; 2025 Drive Sim All rights reserved.</p>
   </footer>
 
-  <!-- JavaScriptの読み込み -->
+  <!-- JavaScript -->
   <script src="js/main.js"></script>
 </body>
 </html>
