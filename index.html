@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DriveSim - ユーザー情報登録</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>DriveSim - ユーザー情報登録</h1>
+  <form id="user-form">
+    <label>年齢条件：</label>
+    <select name="age">
+      <option value="under25">25歳未満</option>
+      <option value="25to29">25〜29歳</option>
+      <option value="30to39">30〜39歳</option>
+      <option value="40plus">40歳以上</option>
+    </select><br>
+
+    <label>免許証の色：</label>
+    <select name="license">
+      <option value="gold">ゴールド</option>
+      <option value="blue">ブルー</option>
+      <option value="green">グリーン</option>
+    </select><br>
+
+    <label>ノンフリート等級：</label>
+    <input type="number" name="grade" min="1" max="20"><br>
+
+    <label>年間走行距離（km）：</label>
+    <input type="number" name="mileage"><br>
+
+    <label>駐車場の有無：</label>
+    <select name="parking" onchange="toggleParkingCost(this.value)">
+      <option value="no">なし</option>
+      <option value="yes">あり</option>
+    </select><br>
+
+    <div id="parking-fee" style="display:none;">
+      <label>駐車場費用（月額）:</label>
+      <input type="number" name="parkingCost"><br>
+    </div>
+
+    <button type="submit">次へ進む</button>
+  </form>
+
+  <script src="script.js"></script>
+</body>
+</html>
